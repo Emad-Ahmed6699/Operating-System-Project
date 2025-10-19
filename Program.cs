@@ -24,10 +24,27 @@ namespace fat_file_system_cs
                 // Reopen
                 disk.Initialize("minifat.bin", false);
                 byte[] readBack = disk.ReadCluster(5);
-                Console.WriteLine(readBack[0]); // 65
+                Console.WriteLine("=== Cluster 5 contents (decimal) ===");
+                for (int i = 0; i < readBack.Length; i++)
+                {
+                    Console.Write(readBack[i].ToString().PadLeft(3, ' ') + " ");
+                    if ((i + 1) % 16 == 0)
+                        Console.WriteLine(); // سطر جديد كل 16 بايت
+                }
+
+                Console.WriteLine("\n\n=== Cluster 5 contents (hexadecimal) ===");
+                for (int i = 0; i < readBack.Length; i++)
+                {
+                    Console.Write(readBack[i].ToString("X2") + " ");
+                    if ((i + 1) % 16 == 0)
+                        Console.WriteLine(); // سطر جديد كل 16 بايت
+                }
                 disk.CloseDisk();
             }
-            catch (Exception ex) { }
+            catch (Exception ex) {
+
+                Console.WriteLine("Error: " + ex.Message);
+            }
         }
     }
 }
