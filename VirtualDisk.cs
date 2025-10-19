@@ -97,5 +97,47 @@ namespace fat_file_system_cs
                 }
             }
         }
+        public byte[] ReadCluster(int clusterNumber)
+        {
+            if (!isOpen) throw new InvalidOperationException("Disk not initialized");
+            if (clusterNumber < 0 || clusterNumber >= CLUSTERS_NUMBER)
+                throw new ArgumentOutOfRangeException(nameof(clusterNumber));
+
+            byte[] buffer = new byte[CLUSTER_SIZE];
+            diskFileStream!.Seek(clusterNumber * CLUSTER_SIZE, SeekOrigin.Begin);
+            int bytesRead = diskFileStream.Read(buffer, 0, CLUSTER_SIZE);
+
+            if (bytesRead < CLUSTER_SIZE)
+                throw new IOException("Incomplete cluster read");
+
+            return buffer;
+        }
+        public void WriteCluster(int clusterNumber, byte[] data)
+        {
+            if (!isOpen) throw new InvalidOperationException("Disk not initialized");
+            if (clusterNumber < 0 || clusterNumber >= CLUSTERS_NUMBER)
+                throw new ArgumentOutOfRangeException(nameof(clusterNumber));
+            if (data.Length != CLUSTER_SIZE)
+                throw new ArgumentException($"Data must be exactly {CLUSTER_SIZE} bytes.");
+
+            diskFileStream!.Seek(clusterNumber * CLUSTER_SIZE, SeekOrigin.Begin);
+            diskFileStream.Write(data, 0, CLUSTER_SIZE);
+            diskFileStream.Flush();
+        }
+        public long GetDiskSize()
+        {
+            return diskSize;
+        }
+
+        public void CloseDisk()
+        {
+            if (diskFileStream != null)
+            {
+                diskFileStream.Flush();
+                diskFileStream.Close();
+                diskFileStream = null;
+            }
+            isOpen = false;
+        }
     }
 }
