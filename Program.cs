@@ -12,8 +12,10 @@ namespace fat_file_system_cs
             VirtualDisk vd = new VirtualDisk(diskPath);
 
             try
-            {   
+            {
                 // TODO: Test the virtual disk then clean up the main the virtual disk will not be created here at the end}
             }
-            catch (Exception ex){ }
+            catch (Exception ex) { }
+        }
+    }
 }

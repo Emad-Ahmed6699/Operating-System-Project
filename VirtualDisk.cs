@@ -5,6 +5,10 @@ namespace fat_file_system_cs
 {
     internal class VirtualDisk
     {
+        /* • In our implementation:
+              ⚬ Total clusters: 1,024
+              ⚬ Cluster size: 1,024 bytes
+        */
         private const int CLUSTER_SIZE = 1024;
         private const int CLUSTERS_NUMBER = 1024;
         private long diskSize = 0;
