@@ -29,7 +29,7 @@ namespace fat_file_system_cs
                 {
                     Console.Write(readBack[i].ToString().PadLeft(3, ' ') + " ");
                     if ((i + 1) % 16 == 0)
-                        Console.WriteLine(); // سطر جديد كل 16 بايت
+                        Console.WriteLine();
                 }
 
                 Console.WriteLine("\n\n=== Cluster 5 contents (hexadecimal) ===");
@@ -37,7 +37,7 @@ namespace fat_file_system_cs
                 {
                     Console.Write(readBack[i].ToString("X2") + " ");
                     if ((i + 1) % 16 == 0)
-                        Console.WriteLine(); // سطر جديد كل 16 بايت
+                        Console.WriteLine(); 
                 }
                 disk.CloseDisk();
             }
