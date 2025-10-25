@@ -9,8 +9,7 @@ namespace fat_file_system_cs
               ⚬ Total clusters: 1,024
               ⚬ Cluster size: 1,024 bytes
         */
-        private const int CLUSTER_SIZE = 1024;
-        private const int CLUSTERS_NUMBER = 1024;
+
         private long diskSize = 0;
         private string? diskPath = null;
         private FileStream? diskFileStream = null;
@@ -35,7 +34,7 @@ namespace fat_file_system_cs
             }
 
             this.diskPath = path;
-            this.diskSize = CLUSTERS_NUMBER * CLUSTER_SIZE;
+            this.diskSize = FsConstants.CLUSTER_COUNT * FsConstants.CLUSTER_SIZE;
 
             try
             {
@@ -77,10 +76,10 @@ namespace fat_file_system_cs
             {
                 tempFileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
 
-                byte[] emptyClusterPlaceholder = new byte[CLUSTER_SIZE];
-                for (int i = 0; i < CLUSTERS_NUMBER; i++)
+                byte[] emptyClusterPlaceholder = new byte[FsConstants.CLUSTER_SIZE];
+                for (int i = 0; i < FsConstants.CLUSTER_COUNT; i++)
                 {
-                    tempFileStream.Write(emptyClusterPlaceholder, 0, CLUSTER_SIZE);
+                    tempFileStream.Write(emptyClusterPlaceholder, 0, FsConstants.CLUSTER_SIZE);
                 }
 
                 tempFileStream.Flush();
@@ -100,14 +99,14 @@ namespace fat_file_system_cs
         public byte[] ReadCluster(int clusterNumber)
         {
             if (!isOpen) throw new InvalidOperationException("Disk not initialized");
-            if (clusterNumber < 0 || clusterNumber >= CLUSTERS_NUMBER)
+            if (clusterNumber < 0 || clusterNumber >= FsConstants.CLUSTER_COUNT)
                 throw new ArgumentOutOfRangeException(nameof(clusterNumber));
 
-            byte[] buffer = new byte[CLUSTER_SIZE];
-            diskFileStream!.Seek(clusterNumber * CLUSTER_SIZE, SeekOrigin.Begin);
-            int bytesRead = diskFileStream.Read(buffer, 0, CLUSTER_SIZE);
+            byte[] buffer = new byte[FsConstants.CLUSTER_SIZE];
+            diskFileStream!.Seek(clusterNumber * FsConstants.CLUSTER_SIZE, SeekOrigin.Begin);
+            int bytesRead = diskFileStream.Read(buffer, 0, FsConstants.CLUSTER_SIZE);
 
-            if (bytesRead < CLUSTER_SIZE)
+            if (bytesRead < FsConstants.CLUSTER_SIZE)
                 throw new IOException("Incomplete cluster read");
 
             return buffer;
@@ -115,13 +114,13 @@ namespace fat_file_system_cs
         public void WriteCluster(int clusterNumber, byte[] data)
         {
             if (!isOpen) throw new InvalidOperationException("Disk not initialized");
-            if (clusterNumber < 0 || clusterNumber >= CLUSTERS_NUMBER)
+            if (clusterNumber < 0 || clusterNumber >= FsConstants.CLUSTER_COUNT)
                 throw new ArgumentOutOfRangeException(nameof(clusterNumber));
-            if (data.Length != CLUSTER_SIZE)
-                throw new ArgumentException($"Data must be exactly {CLUSTER_SIZE} bytes.");
+            if (data.Length != FsConstants.CLUSTER_SIZE)
+                throw new ArgumentException($"Data must be exactly {FsConstants.CLUSTER_SIZE} bytes.");
 
-            diskFileStream!.Seek(clusterNumber * CLUSTER_SIZE, SeekOrigin.Begin);
-            diskFileStream.Write(data, 0, CLUSTER_SIZE);
+            diskFileStream!.Seek(clusterNumber * FsConstants.CLUSTER_SIZE, SeekOrigin.Begin);
+            diskFileStream.Write(data, 0, FsConstants.CLUSTER_SIZE);
             diskFileStream.Flush();
         }
         public long GetDiskSize()
