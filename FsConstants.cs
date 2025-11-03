@@ -15,7 +15,14 @@ namespace fat_file_system_cs
         public const int SUPERBLOCK_CLUSTER = 0;
 
         public const int FAT_START_CLUSTER = 1;
-        public const int FAT_END_CLUSTER = 4; 
+        public const int FAT_END_CLUSTER = 4;
+
+
+        public const int FAT_CLUSTERS = FAT_END_CLUSTER - FAT_START_CLUSTER + 1; // = 4
+        public const int FAT_BYTES = FAT_CLUSTERS * CLUSTER_SIZE;               // = 4096
+        public const int FAT_ENTRY_SIZE = 4;                                    // 4 bytes per FAT entry (int)
+        public const int FAT_ENTRIES = FAT_BYTES / FAT_ENTRY_SIZE;
+
 
         public const int ROOT_DIR_FIRST_CLUSTER = 5;
 
