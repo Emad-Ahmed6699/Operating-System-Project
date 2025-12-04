@@ -45,6 +45,54 @@ namespace fat_file_system_cs
 
                 Console.WriteLine("Error: " + ex.Message);
             }
-        }
+
+            //example on task 4
+                try
+                {
+                    VirtualDisk disk = new VirtualDisk();
+                    disk.Initialize("minifat.bin", true);
+
+                    FatTableManager fat = new FatTableManager(disk);
+                    fat.LoadFatFromDisk();
+
+                    DirectoryManager dm = new DirectoryManager(disk, fat);
+
+                    int root = FsConstants.ROOT_DIR_FIRST_CLUSTER;
+
+                    Console.WriteLine("Root before add:");
+                    var list1 = dm.ReadDirectory(root);
+                    foreach (var e in list1) Console.WriteLine($"{e.Entry.GetDisplayName()} cl={e.Entry.FirstCluster} size={e.Entry.FileSize}");
+
+                    DirectoryEntry newEntry = new DirectoryEntry()
+                    {
+                        Name11 = DirectoryManager.FormatNameTo8Dot3("hello.txt"),
+                        Attribute = 0x01,
+                        FirstCluster = fat.AllocateChain(2),
+                        FileSize = 2048
+                    };
+                    fat.FlushFatToDisk();
+                    var loc = dm.AddDirectoryEntry(root, newEntry);
+
+                    Console.WriteLine("\nRoot after add:");
+                    var list2 = dm.ReadDirectory(root);
+                    foreach (var e in list2) Console.WriteLine($"{e.Entry.GetDisplayName()} cl={e.Entry.FirstCluster} size={e.Entry.FileSize}");
+
+                    var found = dm.FindDirectoryEntry(root, "hello.txt");
+                    if (found != null)
+                    {
+                        dm.RemoveDirectoryEntry(root, found);
+                    }
+
+                    Console.WriteLine("\nRoot after remove:");
+                    var list3 = dm.ReadDirectory(root);
+                    foreach (var e in list3) Console.WriteLine($"{e.Entry.GetDisplayName()} cl={e.Entry.FirstCluster} size={e.Entry.FileSize}");
+
+                    disk.CloseDisk();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
     }
 }
