@@ -16,7 +16,6 @@ namespace fat_file_system_cs
             disk = virtualDisk ?? throw new ArgumentNullException(nameof(virtualDisk));
         }
 
-        // 🟢 1. Load FAT from disk (clusters 1 → 4)
         public void LoadFatFromDisk()
         {
             byte[] buffer = new byte[FsConstants.FAT_CLUSTERS * FsConstants.CLUSTER_SIZE];
@@ -30,7 +29,6 @@ namespace fat_file_system_cs
             Buffer.BlockCopy(buffer, 0, fat, 0, buffer.Length);
         }
 
-        // 🔵 2. Flush FAT back to disk (write 4 clusters)
         public void FlushFatToDisk()
         {
             byte[] buffer = new byte[FsConstants.FAT_CLUSTERS * FsConstants.CLUSTER_SIZE];
@@ -44,24 +42,20 @@ namespace fat_file_system_cs
             }
         }
 
-        // 🟣 3. Get FAT entry value
         public int GetFatEntry(int index)
         {
             ValidateIndex(index);
             return fat[index];
         }
 
-        // 🟣 4. Set FAT entry value
         public void SetFatEntry(int index, int value)
         {
             ValidateIndex(index);
             fat[index] = value;
         }
 
-        // 🟡 5. Read the whole FAT
         public int[] ReadAllFat() => fat;
 
-        // 🟡 6. Write the whole FAT
         public void WriteAllFat(int[] entries)
         {
             if (entries.Length != fat.Length)
@@ -69,7 +63,6 @@ namespace fat_file_system_cs
             Array.Copy(entries, fat, fat.Length);
         }
 
-        // 🔴 7. Follow a chain of clusters
         public List<int> FollowChain(int start)
         {
             ValidateIndex(start);
@@ -84,7 +77,6 @@ namespace fat_file_system_cs
             return chain;
         }
 
-        // 🟢 8. Allocate new chain
         public int AllocateChain(int count)
         {
             List<int> freeClusters = new List<int>();
@@ -101,12 +93,11 @@ namespace fat_file_system_cs
             for (int i = 0; i < freeClusters.Count - 1; i++)
                 fat[freeClusters[i]] = freeClusters[i + 1];
 
-            fat[freeClusters[^1]] = -1; // Last cluster = end of chain
+            fat[freeClusters[^1]] = -1;
 
-            return freeClusters[0]; // Return first cluster
+            return freeClusters[0];
         }
 
-        // 🔵 9. Free a chain (release all clusters)
         public void FreeChain(int start)
         {
             int current = start;
@@ -119,7 +110,6 @@ namespace fat_file_system_cs
             }
         }
 
-        // 🛠️ Helper to prevent invalid access
         private void ValidateIndex(int index)
         {
             if (index < 0 || index >= FsConstants.CLUSTER_COUNT)

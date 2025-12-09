@@ -45,7 +45,7 @@ namespace fat_file_system_cs
 
                 Console.WriteLine("Error: " + ex.Message);
             }
-
+            Console.WriteLine("--------------------------------------");
             //example on task 4
                 try
                 {
