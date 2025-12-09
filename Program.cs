@@ -37,11 +37,12 @@ namespace fat_file_system_cs
                 {
                     Console.Write(readBack[i].ToString("X2") + " ");
                     if ((i + 1) % 16 == 0)
-                        Console.WriteLine(); 
+                        Console.WriteLine();
                 }
                 disk.CloseDisk();
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 Console.WriteLine("Error: " + ex.Message);
             }

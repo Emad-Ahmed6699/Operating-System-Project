@@ -26,13 +26,21 @@ namespace fat_file_system_cs
                 Array.Copy(clusterData, 0, buffer, i * FsConstants.CLUSTER_SIZE, FsConstants.CLUSTER_SIZE);
             }
 
-            Buffer.BlockCopy(buffer, 0, fat, 0, buffer.Length);
+            for (int i = 0; i < FsConstants.CLUSTER_COUNT; i++)
+            {
+                fat[i] = BitConverter.ToInt32(buffer, i * 4);
+            }
         }
 
         public void FlushFatToDisk()
         {
             byte[] buffer = new byte[FsConstants.FAT_CLUSTERS * FsConstants.CLUSTER_SIZE];
-            Buffer.BlockCopy(fat, 0, buffer, 0, buffer.Length);
+
+            for (int i = 0; i < FsConstants.CLUSTER_COUNT; i++)
+            {
+                byte[] intBytes = BitConverter.GetBytes(fat[i]);
+                Array.Copy(intBytes, 0, buffer, i * 4, 4);
+            }
 
             for (int i = 0; i < FsConstants.FAT_CLUSTERS; i++)
             {
@@ -69,8 +77,11 @@ namespace fat_file_system_cs
             List<int> chain = new List<int>();
             int current = start;
 
-            while (current != -1)
+            while (current != -1 && current != 0)
             {
+                if (chain.Contains(current))
+                    throw new InvalidOperationException("Circular chain detected!");
+
                 chain.Add(current);
                 current = fat[current];
             }
@@ -88,7 +99,7 @@ namespace fat_file_system_cs
             }
 
             if (freeClusters.Count < count)
-                throw new Exception("Not enough free clusters!");
+                throw new Exception($"Not enough free clusters! Requested: {count}, Available: {freeClusters.Count}");
 
             for (int i = 0; i < freeClusters.Count - 1; i++)
                 fat[freeClusters[i]] = freeClusters[i + 1];
@@ -100,10 +111,17 @@ namespace fat_file_system_cs
 
         public void FreeChain(int start)
         {
-            int current = start;
+            if (start == 0 || start == -1) return;
 
-            while (current != -1)
+            int current = start;
+            HashSet<int> visited = new HashSet<int>();
+
+            while (current != -1 && current != 0)
             {
+                if (visited.Contains(current))
+                    throw new InvalidOperationException("Circular chain detected during free!");
+
+                visited.Add(current);
                 int next = fat[current];
                 fat[current] = 0;
                 current = next;
@@ -113,10 +131,10 @@ namespace fat_file_system_cs
         private void ValidateIndex(int index)
         {
             if (index < 0 || index >= FsConstants.CLUSTER_COUNT)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range [0, {FsConstants.CLUSTER_COUNT})");
 
             if (index <= FsConstants.FAT_END_CLUSTER)
-                throw new InvalidOperationException("Reserved cluster!");
+                throw new InvalidOperationException($"Cluster {index} is reserved (FAT area)!");
         }
     }
 }
