@@ -12,12 +12,12 @@ namespace fat_file_system_cs
         public int ClusterIndex { get; set; }
         public int EntryIndex { get; set; } 
     }
-    internal class DirectoryManager
+    internal class Directory
     {
         private readonly VirtualDisk disk;
         private readonly FatTableManager fat;
 
-        public DirectoryManager(VirtualDisk virtualDisk, FatTableManager fatManager)
+        public Directory(VirtualDisk virtualDisk, FatTableManager fatManager)
         {
             disk = virtualDisk ?? throw new ArgumentNullException(nameof(virtualDisk));
             fat = fatManager ?? throw new ArgumentNullException(nameof(fatManager));
