@@ -121,7 +121,7 @@ namespace fat_file_system_cs
 
             fs.ListDirectory(FsConstants.ROOT_DIR_FIRST_CLUSTER);
 
-            Shell shell = new Shell(fs);
+            Shell shell = new Shell(dir, fs);
             shell.Run();
 
             fat.FlushFatToDisk();

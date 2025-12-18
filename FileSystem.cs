@@ -113,6 +113,36 @@ namespace fat_file_system_cs
             fat.FlushFatToDisk();
         }
 
+        public void CopyFile(int sourceParentCluster, string sourceFileName, int destParentCluster, string destFileName)
+        {
+            var sourceLoc = dir.FindDirectoryEntry(sourceParentCluster, sourceFileName)
+                           ?? throw new FileNotFoundException("Source file not found");
+
+            if (sourceLoc.Entry.Attribute == FsConstants.ATTR_DIRECTORY)
+                throw new IOException("Cannot copy a directory");
+
+            // Read the source file content
+            string content = ReadFile(sourceParentCluster, sourceFileName);
+
+            // Create the destination file and write content
+            CreateFile(destParentCluster, destFileName);
+            WriteFile(destParentCluster, destFileName, content);
+        }
+
+        public void RenameEntry(int parentCluster, string oldName, string newName)
+        {
+            var loc = dir.FindDirectoryEntry(parentCluster, oldName)
+                      ?? throw new FileNotFoundException("File or directory not found");
+
+            DirectoryEntry entry = loc.Entry;
+            entry.Name11 = Directory.FormatNameTo8Dot3(newName);
+
+            dir.RemoveDirectoryEntry(parentCluster, loc);
+            dir.AddDirectoryEntry(parentCluster, entry);
+
+            fat.FlushFatToDisk();
+        }
+
         // ================= DIRECTORY OPERATIONS =================
 
         public void CreateDirectory(int parentCluster, string name)
