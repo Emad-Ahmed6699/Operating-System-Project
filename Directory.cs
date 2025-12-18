@@ -68,7 +68,10 @@ namespace fat_file_system_cs
         {
             if (entry == null) throw new ArgumentNullException(nameof(entry));
 
-            entry.Name11 = FormatNameTo8Dot3(entry.GetDisplayName()).PadRight(DirectoryEntry.NAME_LEN, ' ');
+            // Ensure Name11 is in 8.3 format and properly padded (always 11 chars)
+            if (entry.Name11.Length != DirectoryEntry.NAME_LEN || !entry.Name11.Contains("   "))
+                entry.Name11 = FormatNameTo8Dot3(entry.Name11.Trim());
+            entry.Name11 = entry.Name11.PadRight(DirectoryEntry.NAME_LEN, ' ');
 
             var chain = fat.FollowChain(startCluster);
             int targetCluster = -1;

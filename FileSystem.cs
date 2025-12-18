@@ -29,7 +29,7 @@ namespace fat_file_system_cs
             DirectoryEntry entry = new DirectoryEntry
             {
                 Name11 = Directory.FormatNameTo8Dot3(fileName),
-                Attribute = 0x01,   // file
+                Attribute = 0x20,   // file (regular file attribute)
                 FirstCluster = 0,
                 FileSize = 0
             };
@@ -156,7 +156,7 @@ namespace fat_file_system_cs
             DirectoryEntry entry = new DirectoryEntry
             {
                 Name11 = Directory.FormatNameTo8Dot3(name),
-                Attribute = 0x02,   // directory
+                Attribute = FsConstants.ATTR_DIRECTORY,   // directory (0x10)
                 FirstCluster = start,
                 FileSize = 0
             };

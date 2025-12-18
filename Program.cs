@@ -110,14 +110,13 @@ namespace fat_file_system_cs
             try
             {
                 fs.CreateFile(FsConstants.ROOT_DIR_FIRST_CLUSTER, "example.txt");
+                fs.WriteFile(FsConstants.ROOT_DIR_FIRST_CLUSTER, "example.txt", "Hello from Program.cs example");
+                Console.WriteLine("example.txt content: " + fs.ReadFile(FsConstants.ROOT_DIR_FIRST_CLUSTER, "example.txt"));
             }
-            catch (IOException)
+            catch (Exception ex)
             {
-                // ignore if already exists
+                Console.WriteLine("Could not create/write example file: " + ex.Message);
             }
-
-            fs.WriteFile(FsConstants.ROOT_DIR_FIRST_CLUSTER, "example.txt", "Hello from Program.cs example");
-            Console.WriteLine("example.txt content: " + fs.ReadFile(FsConstants.ROOT_DIR_FIRST_CLUSTER, "example.txt"));
 
             fs.ListDirectory(FsConstants.ROOT_DIR_FIRST_CLUSTER);
 
