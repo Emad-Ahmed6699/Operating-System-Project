@@ -183,15 +183,15 @@ namespace fat_file_system_cs
 
             Console.WriteLine($"\nعدد العناصر: {entries.Count}");
 
-            foreach (var loc in entries)
+            foreach (var loc in entries.Select(loc => loc.Entry))
             {
-                string name = loc.Entry.GetDisplayName();
-                bool isDir = (loc.Entry.Attribute & FsConstants.ATTR_DIRECTORY) != 0;
+                string name = loc.GetDisplayName();
+                bool isDir = (loc.Attribute & FsConstants.ATTR_DIRECTORY) != 0;
 
                 if (isDir)
                     Console.WriteLine($"📁 {name}");
                 else
-                    Console.WriteLine($"📄 {name} ({loc.Entry.FileSize} bytes)");
+                    Console.WriteLine($"📄 {name} ({loc.FileSize} bytes)");
             }
             Console.WriteLine();
         }

@@ -54,7 +54,7 @@ namespace fat_file_system_cs
             }
         }
 
-        private List<string> ParseInput(string input)
+        private static List<string> ParseInput(string input)
         {
             var tokens = new List<string>();
             var currentToken = new StringBuilder();
@@ -96,7 +96,7 @@ namespace fat_file_system_cs
                     CmdChangeDirectory(args);
                     break;
                 case "cls":
-                    CmdClearScreen(args);
+                    CmdClearScreen();
                     break;
                 case "dir":
                     CmdListDirectory(args);
@@ -111,7 +111,7 @@ namespace fat_file_system_cs
                     CmdDeleteFile(args);
                     break;
                 case "help":
-                    CmdHelp(args);
+                    CmdHelp();
                     break;
                 case "md":
                 case "mkdir":
@@ -213,7 +213,7 @@ namespace fat_file_system_cs
             return cluster;
         }
 
-        private void CmdClearScreen(List<string> args)
+        private static void CmdClearScreen()
         {
             Console.Clear();
         }
@@ -244,19 +244,19 @@ namespace fat_file_system_cs
             Console.WriteLine($"{"Name",-15} {"Type",-10} {"Size",-10} {"Cluster",-10}");
             Console.WriteLine(new string('-', 50));
 
-            foreach (var entryLoc in entries)
+            foreach (var entry in entries.Select(entryLoc => entryLoc.Entry))
             {
-                string name = FormatNameForDisplay(entryLoc.Entry.Name11);
-                string type = entryLoc.Entry.Attribute == FsConstants.ATTR_DIRECTORY ? "<DIR>" : "FILE";
-                string size = entryLoc.Entry.Attribute == FsConstants.ATTR_DIRECTORY ? "" : entryLoc.Entry.FileSize.ToString();
+                string name = FormatNameForDisplay(entry.Name11);
+                string type = entry.Attribute == FsConstants.ATTR_DIRECTORY ? "<DIR>" : "FILE";
+                string size = entry.Attribute == FsConstants.ATTR_DIRECTORY ? "" : entry.FileSize.ToString();
                 
-                Console.WriteLine($"{name,-15} {type,-10} {size,-10} {entryLoc.Entry.FirstCluster,-10}");
+                Console.WriteLine($"{name,-15} {type,-10} {size,-10} {entry.FirstCluster,-10}");
             }
 
             Console.WriteLine($"\n{entries.Count} item(s)");
         }
 
-        private string FormatNameForDisplay(string name)
+        private static string FormatNameForDisplay(string name)
         {
             string baseName = name.Substring(0, 8).Trim();
             string ext = name.Substring(8, 3).Trim();
@@ -306,7 +306,7 @@ namespace fat_file_system_cs
             }
         }
 
-        private void CmdHelp(List<string> args)
+        private static void CmdHelp()
         {
             Console.WriteLine("\nAvailable Commands:");
             Console.WriteLine("  cd [dir]              - Change directory or show current directory");

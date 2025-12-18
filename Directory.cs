@@ -56,12 +56,7 @@ namespace fat_file_system_cs
         {
             string key = FormatNameTo8Dot3(name);
             var all = ReadDirectory(startCluster);
-            foreach (var loc in all)
-            {
-                if (string.Equals(loc.Entry.Name11.Trim(), key.Trim(), StringComparison.OrdinalIgnoreCase))
-                    return loc;
-            }
-            return null;
+            return all.FirstOrDefault(loc => string.Equals(loc.Entry.Name11.Trim(), key.Trim(), StringComparison.OrdinalIgnoreCase));
         }
 
         public DirEntryLocation AddDirectoryEntry(int startCluster, DirectoryEntry entry)
