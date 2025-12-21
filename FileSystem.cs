@@ -37,6 +37,13 @@ namespace fat_file_system_cs
             dir.AddDirectoryEntry(parentCluster, entry);
         }
 
+        // 1. Find file entry
+        // 2. Convert content to bytes
+        // 3. Calculate required clusters
+        // 4. Free old clusters (if exist)
+        // 5. Allocate new clusters
+        // 6. Write data to disk clusters
+        // 7. Update directory entry
         public void WriteFile(int parentCluster, string fileName, string content)
         {
             var loc = dir.FindDirectoryEntry(parentCluster, fileName)
@@ -76,6 +83,10 @@ namespace fat_file_system_cs
             fat.FlushFatToDisk();
         }
 
+        // 1. Find file entry
+        // 2. Follow cluster chain
+        // 3. Read clusters sequentially
+        // 4. Combine bytes into final result
         public string ReadFile(int parentCluster, string fileName)
         {
             var loc = dir.FindDirectoryEntry(parentCluster, fileName)
@@ -101,6 +112,8 @@ namespace fat_file_system_cs
             return Converter.BytesToString(result);
         }
 
+        // - Free its data clusters
+        // - Remove directory entry
         public void DeleteFile(int parentCluster, string fileName)
         {
             var loc = dir.FindDirectoryEntry(parentCluster, fileName)
@@ -113,6 +126,7 @@ namespace fat_file_system_cs
             fat.FlushFatToDisk();
         }
 
+        
         public void CopyFile(int sourceParentCluster, string sourceFileName, int destParentCluster, string destFileName)
         {
             var sourceLoc = dir.FindDirectoryEntry(sourceParentCluster, sourceFileName)

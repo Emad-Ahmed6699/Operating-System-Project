@@ -71,7 +71,7 @@ namespace fat_file_system_cs
             Array.Copy(entries, fat, fat.Length);
         }
 
-        public List<int> FollowChain(int start)
+        public List<int> FollowChain(int start)// return the list of clusters in the chain
         {
             ValidateIndex(start);
             List<int> chain = new List<int>();
@@ -88,7 +88,7 @@ namespace fat_file_system_cs
             return chain;
         }
 
-        public int AllocateChain(int count)
+        public int AllocateChain(int count)//choose the first free cluster and link it to the next
         {
             List<int> freeClusters = new List<int>();
 
@@ -109,7 +109,7 @@ namespace fat_file_system_cs
             return freeClusters[0];
         }
 
-        public void FreeChain(int start)
+        public void FreeChain(int start)//free the cluster chain
         {
             if (start == 0 || start == -1) return;
 
